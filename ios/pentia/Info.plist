@@ -32,6 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.87008628205-4c68n5v4nvto9i1hvi0j48muqrfmlh2t</string>
+				<string>fb2316853975594050</string>
 			</array>
 		</dict>
 	</array>
@@ -86,5 +87,16 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+		<key>FacebookAppID</key>
+	<string>2316853975594050</string>
+	<key>FacebookClientToken</key>
+	<string>1ac9e974b46a7149383b8351a75322cc</string>
+	<key>FacebookDisplayName</key>
+	<string>pentia</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+	</array>
 </dict>
 </plist>
