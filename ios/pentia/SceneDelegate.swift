@@ -2,6 +2,7 @@ import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
 import UIKit
+import FBSDKCoreKit
 
 class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate {
   var window: UIWindow?
@@ -39,6 +40,15 @@ class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate
   }
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    if let url = URLContexts.first?.url,
+       ApplicationDelegate.shared.application(
+         UIApplication.shared,
+         open: url,
+         sourceApplication: nil,
+         annotation: [UIApplication.OpenURLOptionsKey.annotation]
+       ) {
+      return
+    }
     RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
   }
 

@@ -3,6 +3,7 @@ import appleAuth, { AppleButton } from "@invertase/react-native-apple-authentica
 import { FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
 // Switching from AppleAuthProver to OAuthProvider since upcoming changes in v27 will change it
 import { GoogleOneTapSignIn, isNoSavedCredentialFoundResponse, isSuccessResponse } from "react-native-nitro-google-signin";
+import { AccessToken, LoginManager } from "react-native-fbsdk-next";
 
 GoogleOneTapSignIn.configure({webClientId: '87008628205-r10ki8ikmu3gnr0fhahu76ce1s6inilv.apps.googleusercontent.com'});
 
@@ -32,7 +33,7 @@ async function onAppleButtonPress(){
 
 // Facebook
 async function onFacebookButtonPress(){
-    const result = await LoginManager.logInWithPermission(['public_profile', 'email']);
+    const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
 
     if(result.isCancelled) {
         throw 'User cancelled the login process';
