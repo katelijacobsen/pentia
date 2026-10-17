@@ -1,7 +1,11 @@
 import { View, Text, Button } from "react-native";
 import appleAuth, { AppleButton } from "@invertase/react-native-apple-authentication";
-import { FacebookAuthProvider, OAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
+import { FacebookAuthProvider, GoogleAuthProvider, OAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
 // Switching from AppleAuthProver to OAuthProvider since upcoming changes in v27 will change it
+import { GoogleOneTapSignIn, isNoSavedCredentialFoundResponse, isSuccessResponse } from "react-native-nitro-google-signin";
+
+GoogleOneTapSignIn.configure({webClientId: '87008628205-r10ki8ikmu3gnr0fhahu76ce1s6inilv.apps.googleusercontent.com'});
+
 
 // Apple Login
 async function onAppleButtonPress(){
@@ -48,7 +52,27 @@ async function onFacebookButtonPress(){
 
 // Google
 async function onGoogleButtonPress(){
+    await GoogleOneTapSignIn.checkPlayServices();
+
+    let response = await GoogleOneTapSignIn.signIn();
+
+    if(isNoSavedCredentialFoundResponse(response)){
+        response = await GoogleOneTapSignIn.presentExplicitSignIn();
+    }
+
+    if(!isSuccessResponse(response)){
+        throw new Error('Failed to sign in with Google');
+    }
+
+    const idToken = response.data?.idToken;
+    if(!idToken){
+        throw new Error('No ID token found');
+    }
+
+    const googleCredential = GoogleAuthProvider.credential(idToken);
     
+    return signInWithCredential(getAuth(), googleCredential);
+
 }
 
 export default function App() {
@@ -61,6 +85,7 @@ export default function App() {
             style={{width: 200, height: 45}}
             onPress={() => onAppleButtonPress().then(()=> console.log('Apple sign-in ok'))}/>
             <Button title="Sign in with Facebook" onPress={() => onFacebookButtonPress().then(() => console.log('Facebook login ok'))}/>
+            <Button title="Sign in with Google" onPress={() => onGoogleButtonPress().then(() => console.log('Google login ok'))}/>
         </View>
     )
 }
