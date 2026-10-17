@@ -46,6 +46,11 @@ async function onFacebookButtonPress(){
 
 }
 
+// Google
+async function onGoogleButtonPress(){
+    
+}
+
 export default function App() {
     return (
         <View>
