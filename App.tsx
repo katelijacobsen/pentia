@@ -1,6 +1,6 @@
 import { View, Text, Button } from "react-native";
 import appleAuth, { AppleButton } from "@invertase/react-native-apple-authentication";
-import { OAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
+import { FacebookAuthProvider, OAuthProvider, getAuth, signInWithCredential } from "@react-native-firebase/auth";
 // Switching from AppleAuthProver to OAuthProvider since upcoming changes in v27 will change it
 
 // Apple Login
@@ -26,6 +26,26 @@ async function onAppleButtonPress(){
     return signInWithCredential(getAuth(), appleCredential);
 }
 
+// Facebook
+async function onFacebookButtonPress(){
+    const result = await LoginManager.logInWithPermission(['public_profile', 'email']);
+
+    if(result.isCancelled) {
+        throw 'User cancelled the login process';
+    }
+
+    const data = await AccessToken.getCurrentAccessToken();
+
+    if(!data){
+        throw Error('Something went wrong');
+    }
+
+    const facebookCredential = FacebookAuthProvider.credential(data.accessToken);
+
+    return signInWithCredential(getAuth(), facebookCredential)
+
+}
+
 export default function App() {
     return (
         <View>
@@ -35,6 +55,7 @@ export default function App() {
             buttonType={AppleButton.Type.SIGN_IN}
             style={{width: 200, height: 45}}
             onPress={() => onAppleButtonPress().then(()=> console.log('Apple sign-in ok'))}/>
+            <Button title="Sign in with Facebook" onPress={() => onFacebookButtonPress().then(() => console.log('Facebook login ok'))}/>
         </View>
     )
 }
