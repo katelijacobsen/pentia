@@ -35,5 +35,14 @@ target 'pentia' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Raise old pods (Firebase/gRPC) to the minimum iOS version Xcode supports
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_f < min_ios_version_supported.to_f
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+        end
+      end
+    end
   end
 end
