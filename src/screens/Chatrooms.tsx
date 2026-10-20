@@ -1,32 +1,44 @@
-import { Button, FlatList, Pressable, StyleSheet, Text, TextInput, View, } from "react-native";
+import { ActivityIndicator, Button, FlatList, Pressable, StyleSheet, Text, TextInput, View, } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../nav/Nav";
 
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from "@react-native-firebase/firestore";
+import { useEffect } from "react";
+import { useRooms } from "../hooks/useRooms";
 
-const db = getFirestore();
-const userCollection = collection(db, 'Users');
-
-const users = await getDocs(collection(db, 'Users'));
-const user = await getDoc(doc(collection(db, 'Users'), 'ABC'));
-
-function onResult(QuerySnapshot){
-    console.log('Get Users Collection Result', QuerySnapshot);
-}
-
-function onError(error){
-    console.error(error);
-}
-
-onSnapshot(collection(db, 'Users'), onResult, onError);
 
 export default function Chatrooms() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const { rooms, loading, reloading, error, reload } = useRooms();
+    
+    useEffect(() => {
+        const rmvListener = onSnapshot(
+            collection(getFirestore(), 'Users'),
+            snapshot => console.log('Users', snapshot.size),
+            error => console.error(error),
+        );
+        return rmvListener;
+    }, []);
+    
+
+    
+    if(error)
+        return <Text>{error}</Text>;
+    if(loading)
+        return <ActivityIndicator/>;
 
     return (
         <View>
-            <FlatList data={"something"}>
+            <FlatList data={rooms} keyExtractor={room => room.id} renderItem={({ item }) =>(
+                <Pressable>
+                    <Text>{item.chatroom}</Text>
+                </Pressable>
+            )}
+            refreshing={reloading}
+            onRefresh={reload}
+            ListEmptyComponent={<Text>No chatrooms found</Text>}
+            >
             <Text>Name</Text>
             <Text>Description</Text>
             </FlatList>

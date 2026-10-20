@@ -20,7 +20,7 @@ export function useRooms(){
         try {
             setReloading(true);
             await load();
-            setReloading(fail);
+            setReloading(false);
         } catch {
             setError('Failed to refresh rooms')
         }
@@ -28,7 +28,7 @@ export function useRooms(){
 
     useEffect(() => {
         load().finally(() => setLoading(false));
-    }, [load]);
+    }, []);
 
     return { rooms, loading, reloading, error, reload}
 }
