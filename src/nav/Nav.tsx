@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged, type User } from '@react-native-firebase/auth';
+import { getAuth, onAuthStateChanged  } from '@react-native-firebase/auth';
 import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import Chat from "../screens/Chat";
+import Chatrooms from "../screens/Chatrooms";
 import Profile from "../screens/Profile";
 import Login from "../screens/Login";
 
 export type RootStackParamList = {
     Login: undefined;
     Profile: undefined;
-    Chat: undefined;
+    Chatrooms: undefined;
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -36,7 +36,7 @@ export default function Nav(){
             <Stack.Navigator>
                 {user ? (
                     <>
-                    <Stack.Screen name="Chat" component={Chat} /> 
+                    <Stack.Screen name="Chatrooms" component={Chatrooms} /> 
                     <Stack.Screen name="Profile" component={Profile}/> 
                     </> 
                     ):(
