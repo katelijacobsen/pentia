@@ -12,26 +12,36 @@ const colors = {
 };
 
 type Props = TextInputProps & {
+  onSend: (text: string) => Promise<boolean>;
   invalid?: boolean;
-  ref?: Ref<TextInput>;
+  ref?: Ref<any>;
 };
 
 export function Textfield({
   invalid = false,
   editable = true,
   style,
+  onSend,
   onFocus,
   onBlur,
   ...props
 }: Props) {
   const [focused, setFocused] = useState(false);
+  const [ text, setText] = useState<string>('')
+  async function handleSend(){
+    const content = text;
+    setText('');
+    const approved = await onSend(content);
+    if(!approved) setText(content); 
 
+  }
   return (
     <TextInput
       placeholderTextColor={colors.mutedForeground}
       selectionColor={colors.primary}
       {...props}
       editable={editable}
+      onPress={handleSend}
       onFocus={event => {
         setFocused(true);
         onFocus?.(event);
