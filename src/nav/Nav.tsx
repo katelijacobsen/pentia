@@ -7,14 +7,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Chatrooms from "../screens/Chatrooms";
 import Profile from "../screens/Profile";
 import Login from "../screens/Login";
+import type { User } from "@react-native-firebase/auth";
+import type { RootParam } from "../types/Navigation"
+import Chat from "../screens/Chat";
 
-export type RootStackParamList = {
-    Login: undefined;
-    Profile: undefined;
-    Chatrooms: undefined;
-}
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootParam>();
 
 
 export default function Nav(){
@@ -37,6 +34,7 @@ export default function Nav(){
                 {user ? (
                     <>
                     <Stack.Screen name="Chatrooms" component={Chatrooms} /> 
+                    <Stack.Screen name="Chat" component={Chat} options={({route}) => ({title: route.params.roomName})}/>
                     <Stack.Screen name="Profile" component={Profile}/> 
                     </> 
                     ):(

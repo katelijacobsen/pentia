@@ -6,6 +6,8 @@ import type { RootStackParamList } from "../nav/Nav";
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from "@react-native-firebase/firestore";
 import { useEffect } from "react";
 import { useRooms } from "../hooks/useRooms";
+import {CustomButton} from "../components/CustomButton";
+import { Chat } from "../screens/Chat"
 
 
 export default function Chatrooms() {
@@ -21,7 +23,6 @@ export default function Chatrooms() {
         return rmvListener;
     }, []);
     
-
     
     if(error)
         return <Text>{error}</Text>;
@@ -29,26 +30,31 @@ export default function Chatrooms() {
         return <ActivityIndicator/>;
 
     return (
-        <View>
-            <FlatList data={rooms} keyExtractor={room => room.id} renderItem={({ item }) =>(
-                <Pressable>
-                    <Text>{item.chatroom}</Text>
-                </Pressable>
-            )}
-            refreshing={reloading}
-            onRefresh={reload}
-            ListEmptyComponent={<Text>No chatrooms found</Text>}
-            >
-            <Text>Name</Text>
-            <Text>Description</Text>
-            </FlatList>
-            <TextInput placeholder="Message" returnKeyType="send"/>
-            <Pressable style={styles.button}>
-                <Text>Send</Text>
-            </Pressable>
-            <Button title="Profile" onPress={() => navigation.navigate('Profile')} />
-        </View>
-    );
+  <View style={{ flex: 1, paddingInline: 32, paddingTop: 50 }}>
+    <FlatList
+      data={rooms}
+      keyExtractor={(room) => room.id}
+      renderItem={({ item }) => (
+        <CustomButton onPress={() => navigation.navigate('Chat', { roomId: item.id, roomName: item.chatroom})}>
+          {item.chatroom}
+        </CustomButton>
+      )}
+      ItemSeparatorComponent={() => (
+        <View style={{ height: 12, paddingInline: 24 }} />
+      )}
+      refreshing={reloading}
+      onRefresh={reload}
+      ListEmptyComponent={<Text>No chatrooms found</Text>}
+    />
+
+    <CustomButton
+      onPress={() => navigation.navigate('Profile')}
+      variant="outline"
+    >
+      Profile
+    </CustomButton>
+  </View>
+);
 }
 
 const styles = StyleSheet.create({
