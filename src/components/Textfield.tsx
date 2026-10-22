@@ -44,7 +44,6 @@ export function Textfield({
       selectionColor={colors.primary}
       {...props}
       editable={editable}
-      onPress={handleSend}
       onFocus={event => {
         setFocused(true);
         onFocus?.(event);

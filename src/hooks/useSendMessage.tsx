@@ -23,11 +23,11 @@ export function useSendMessage(roomId: string){
             await postMessage(roomId, message,{
                 uid: user.uid,
                 name: user.displayName || 'Unknown',
-                avatarUrl: user.imgURL || null
+                avatarUrl: user.photoURL || null
             });
             return true;
         } catch(error) {
-            setError('Cannot end current message');
+            console.error('failed to send', error)
             return false;
         }finally{
             setSending(false);

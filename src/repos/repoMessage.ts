@@ -15,7 +15,7 @@ export async function postMessage(roomId: string, text: string, user:User){
     });
 
     createBatch.update(doc(db, 'rooms', roomId), {
-        lastMsgAt: serverTimestamp(),
+        lastMessageAt: serverTimestamp(),
     });
 
     await createBatch.commit();
