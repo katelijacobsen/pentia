@@ -4,7 +4,7 @@ import { User, Message } from '../types/Message'
 const db = getFirestore();
 const MSG_LIMIT = 50;
 const messagesRef = (roomId: string) => collection(db, `rooms/${roomId}/messages`);
-type MessageCursor = QueryDocumentSnapshot;
+export type MessageCursor = QueryDocumentSnapshot;
 
 
 export async function postMessage(roomId: string, text: string, user:User){
@@ -56,7 +56,7 @@ export async function getMessages(roomId: string, after?: MessageCursor){
     };
 };
 
-export async function SnapMessages(roomId: string, newest?:MessageCursor){
+export function SnapMessages(roomId: string, newest:MessageCursor, onChange:(messages: Message[]) => void, onError:(error: Error) => void){
     const q = query(
     messagesRef(roomId),
     orderBy('createdAt', 'desc'), 
@@ -64,7 +64,7 @@ export async function SnapMessages(roomId: string, newest?:MessageCursor){
     )
 
     return onSnapshot(
-        q, snapshot => onChange(snapshot.docs.map(messageTo), onError,) 
+        q, snapshot => onChange(snapshot.docs.map(messageTo)), onError 
     )
 }
 
