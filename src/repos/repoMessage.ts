@@ -56,15 +56,19 @@ export async function getMessages(roomId: string, after?: MessageCursor){
     };
 };
 
-export function SnapMessages(roomId: string, newest:MessageCursor, onChange:(messages: Message[]) => void, onError:(error: Error) => void){
-    const q = query(
-    messagesRef(roomId),
-    orderBy('createdAt', 'desc'), 
-    startAfter(newest), 
+export function SnapMessages(roomId: string,
+    newest:MessageCursor,
+    onChange:(messages: Message[]) => void,
+    onError:(error: Error) => void)
+    {
+    
+    const q = newest ? query(messagesRef(roomId), orderBy('createdAt', 'asc'), startAfter(newest)) :
+      query(messagesRef(roomId), orderBy('createdAt', 'asc'), startAfter(newest)),
+    
     )
 
     return onSnapshot(
         q, snapshot => onChange(snapshot.docs.map(messageTo)), onError 
-    )
+    );
 }
 

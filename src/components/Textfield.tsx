@@ -1,5 +1,5 @@
 import { useState, type Ref } from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, TextInputProps } from 'react-native';
 
 // Colors from shadcn/ui's default "neutral" theme (light mode)
 const colors = {
@@ -36,7 +36,10 @@ export function Textfield({
 
   }
   return (
+    <>
     <TextInput
+      value={text}
+      onChangeText={setText}
       placeholderTextColor={colors.mutedForeground}
       selectionColor={colors.primary}
       {...props}
@@ -58,7 +61,9 @@ export function Textfield({
         !editable && styles.disabled,
         style,
       ]}
-    />
+      />
+      <Pressable onPress={handleSend}><Text>Click</Text></Pressable>
+      </>
   );
 }
 

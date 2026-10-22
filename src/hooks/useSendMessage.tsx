@@ -3,7 +3,7 @@ import { getAuth } from '@react-native-firebase/auth';
 import { postMessage } from '../repos/repoMessage';
 
 
-export function useSendMessage(){
+export function useSendMessage(roomId: string){
     const [ sending, setSending ] = useState(false);
     const [ error, setError ] = useState<string | null>(null);
 
