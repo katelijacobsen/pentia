@@ -5,7 +5,7 @@ import { SnapMessages, getMessages, type MessageCursor } from '../repos/repoMess
 export default function useMessages(roomId: string){
     const [ older, setOlder ] = useState<Message[]>([]);
     const [ newer, setNewer ] = useState<Message[]>([]);
-
+    const [hasMore, setHasMore] = useState(false);
     const [loading, setLoading] = useState(true);
     const [ moreLoading, setMoreLoading ] = useState(false);
     const [error, setError] = useState<string>();
@@ -32,7 +32,8 @@ export default function useMessages(roomId: string){
                 );
             } catch (error) {
                 if (isActive) {
-                    setError("Loading messages failed")
+                    console.error('getMessages failed', error);
+                    //setError("Loading messages failed")
                 }
             } finally {
                 if (isActive) {
@@ -48,7 +49,7 @@ export default function useMessages(roomId: string){
     }, [roomId]);
 
     async function loadMore() {
-        if (moreLoading || !cursor.current) {
+        if (moreLoading || !hasMore || !cursor.current) {
             return;
         }
 
@@ -58,6 +59,10 @@ export default function useMessages(roomId: string){
             const page = await getMessages(
                 roomId, cursor.current
             );
+            setOlder(prev => [...prev, ...page.messages]);
+
+            cursor.current = page.oldest;
+            setHasMore(page.hasMore)
         }catch{
             setError("Failed to load messages")
         }finally{

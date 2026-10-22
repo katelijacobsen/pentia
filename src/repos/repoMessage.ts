@@ -41,11 +41,9 @@ export function messageTo(snap: MessageCursor): Message {
 
 export async function getMessages(roomId: string, after?: MessageCursor){
 
-    const queryMessage = query(
-    messagesRef(roomId),
-    orderBy('createdAt', 'desc'), 
-    startAfter(after), 
-    limit(MSG_LIMIT));
+    const queryMessage = after
+        ? query(messagesRef(roomId), orderBy('createdAt', 'desc'), startAfter(after), limit(MSG_LIMIT))
+        : query(messagesRef(roomId), orderBy('createdAt', 'desc'), limit(MSG_LIMIT));
 
     const snapshot = await getDocs(queryMessage);
     return {
@@ -62,10 +60,9 @@ export function SnapMessages(roomId: string,
     onError:(error: Error) => void)
     {
     
-    const q = newest ? query(messagesRef(roomId), orderBy('createdAt', 'asc'), startAfter(newest)) :
-      query(messagesRef(roomId), orderBy('createdAt', 'asc'), startAfter(newest)),
-    
-    )
+    const q = newest
+    ? query(messagesRef(roomId), orderBy('createdAt', 'asc'), startAfter(newest))
+    : query(messagesRef(roomId), orderBy('createdAt', 'asc'));
 
     return onSnapshot(
         q, snapshot => onChange(snapshot.docs.map(messageTo)), onError 
