@@ -7,7 +7,7 @@ export default function useMessages(roomId: string){
     const [ newer, setNewer ] = useState<Message[]>([]);
 
     const [loading, setLoading] = useState(true);
-    const [ moreLoading, setMoreLoading ] = useState(true);
+    const [ moreLoading, setMoreLoading ] = useState(false);
     const [error, setError] = useState<string>();
     
     const cursor = useRef<MessageCursor>(undefined);
@@ -46,4 +46,32 @@ export default function useMessages(roomId: string){
             unsubscribe();
         };
     }, [roomId]);
+
+    async function loadMore() {
+        if (moreLoading || !cursor.current) {
+            return;
+        }
+
+        setMoreLoading(true);
+
+        try{
+            const page = await getMessages(
+                roomId, cursor.current
+            );
+        }catch{
+            setError("Failed to load messages")
+        }finally{
+            setMoreLoading(false);
+        }
+    }
+
+    const messages = [...newer.slice().reverse(), ...older];
+    
+    return {
+        messages,
+        loading,
+        moreLoading,
+        error,
+        loadMore
+    }
 }
