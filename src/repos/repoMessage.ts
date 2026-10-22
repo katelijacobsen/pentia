@@ -1,4 +1,4 @@
-import { doc, addDoc, updateDoc, collection, getFirestore, limit, orderBy, query, QueryDocumentSnapshot, serverTimestamp, startAfter, getDocs } from "@react-native-firebase/firestore";
+import { doc, addDoc, updateDoc, collection, getFirestore, limit, orderBy, query, QueryDocumentSnapshot, serverTimestamp, startAfter, getDocs, onSnapshot, writeBatch } from "@react-native-firebase/firestore";
 import { User, Message } from '../types/Message'
 
 const db = getFirestore();
@@ -7,18 +7,29 @@ const messagesRef = (roomId: string) => collection(db, `rooms/${roomId}/messages
 type MessageCursor = QueryDocumentSnapshot;
 
 
-async function postMessage(roomId: string, text: string, user:User){
-    await addDoc(
-    messagesRef(roomId),
-    {text, user, createdAt: serverTimestamp()});
-    
-    await updateDoc(
-    doc(db, `rooms/${roomId}`),
-    {lastMessageAt: serverTimestamp(),
+export async function postMessage(roomId: string, text: string, user:User){
+    const createBatch = writeBatch(db);
+
+    createBatch.set(doc(messagesRef(roomId)), {
+        user,text,createdAt:serverTimestamp(),
     });
+
+    createBatch.update(doc(db, 'rooms', roomId), {
+        lastMsgAt: serverTimestamp(),
+    });
+
+    await createBatch.commit();
+    // await addDoc(
+    // messagesRef(roomId),
+    // {text, user, createdAt: serverTimestamp()});
+    
+    // await updateDoc(
+    // doc(db, `rooms/${roomId}`),
+    // {lastMessageAt: serverTimestamp(),
+    // });
 }
 
-function messageTo(snap: MessageCursor): Message {
+export function messageTo(snap: MessageCursor): Message {
     const data = snap.data();
     return {
         id: snap.id,
@@ -28,7 +39,8 @@ function messageTo(snap: MessageCursor): Message {
     }
 }
 
-async function getMessages(roomId: string, after: MessageCursor){
+export async function getMessages(roomId: string, after?: MessageCursor){
+
     const queryMessage = query(
     messagesRef(roomId),
     orderBy('createdAt', 'desc'), 
@@ -38,8 +50,21 @@ async function getMessages(roomId: string, after: MessageCursor){
     const snapshot = await getDocs(queryMessage);
     return {
         messages: snapshot.docs.map(messageTo),
+        newest: snapshot.docs[0],
         oldest: snapshot.docs.at(-1),
         hasMore: snapshot.docs.length === MSG_LIMIT,
     };
 };
+
+export async function SnapMessages(roomId: string, newest?:MessageCursor){
+    const q = query(
+    messagesRef(roomId),
+    orderBy('createdAt', 'desc'), 
+    startAfter(newest), 
+    )
+
+    return onSnapshot(
+        q, snapshot => onChange(snapshot.docs.map(messageTo), onError,) 
+    )
+}
 
