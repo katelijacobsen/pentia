@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Image } from "react-native";
 import { Message } from "../types/Message";
 
 type Props = { message: Message; myMessage: boolean};
@@ -6,6 +6,8 @@ type Props = { message: Message; myMessage: boolean};
 export function MessageBubble({message, myMessage}: Props){
     return (
         <View style={[styles.bubble, myMessage ? styles.mine : styles.theirs]}>
+            
+            {message.user.avatarUrl && ( <Image source={{ uri: message.user.avatarUrl}}/>)}
             {!myMessage && <Text style={styles.name}>{message.user?.name}</Text>}
             <Text style={myMessage ? styles.mineText : undefined}>{message.text}</Text>
             <Text style={[styles.time, myMessage && styles.mineText]}>

@@ -1,11 +1,12 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ActivityIndicator, FlatList, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, FlatList, ScrollView, Text, TextInput, View } from "react-native";
 import { RootParam } from "../types/Navigation";
 import {Textfield} from "../components/Textfield";
 import { useSendMessage } from "../hooks/useSendMessage";
 import { getAuth } from "@react-native-firebase/auth";
 import useMessages from "../hooks/useMessages";
 import { MessageBubble } from "../components/MessageBubble";
+import { ScreenContainer } from "react-native-screens";
 
 type Props = NativeStackScreenProps<RootParam, 'Chat'>;
 
@@ -20,6 +21,7 @@ export default function Chat({route}: Props){
 
     return(
         <View style={{flex:1}}>
+
             <FlatList
                 inverted
                 data={messages}
@@ -31,7 +33,7 @@ export default function Chat({route}: Props){
                 onEndReachedThreshold={0.3}
                 ListFooterComponent={moreLoading ? <ActivityIndicator/> : undefined}
                 ListEmptyComponent={<Text>No messages yet</Text>}
-            />
+                />
             {sendError && <Text style={{ color: 'red', padding: 8 }}>{sendError}</Text>}
             <Textfield onSend={send} />
         </View>
