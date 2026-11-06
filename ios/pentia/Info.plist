@@ -38,6 +38,17 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FacebookAppID</key>
+	<string>2316853975594050</string>
+	<key>FacebookClientToken</key>
+	<string>1ac9e974b46a7149383b8351a75322cc</string>
+	<key>FacebookDisplayName</key>
+	<string>pentia</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -87,16 +98,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-		<key>FacebookAppID</key>
-	<string>2316853975594050</string>
-	<key>FacebookClientToken</key>
-	<string>1ac9e974b46a7149383b8351a75322cc</string>
-	<key>FacebookDisplayName</key>
-	<string>pentia</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-share-api</string>
-	</array>
 </dict>
 </plist>
