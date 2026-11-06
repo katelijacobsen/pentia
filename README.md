@@ -1,97 +1,96 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Pentia Chat
 
-# Getting Started
+A real-time chat app for iOS built with React Native and Firebase.
+Users sign in with Google or Facebook, browse chat rooms and exchange messages live.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+> Built as a case assignment for Pentia.
 
-## Step 1: Start Metro
+## Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+| Feature | Status |
+|---|---|
+| Sign in with Google / Facebook (Firebase Auth) | ✅ |
+| Sign out | ✅ |
+| Chat room list sorted by latest activity, pull-to-refresh | ✅ |
+| Real-time messages (Firestore snapshot listener) | ✅ |
+| Send messages | ✅ |
+| Load older messages on scroll (cursor pagination) | ⚠️ Implemented, see Known issues |
+| Splash screen | ❌ |
+| Push notifications with deep links | ❌ |
+| Image upload | ❌ |
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Tech stack
 
-```sh
-# Using npm
-npm start
+- **React Native 0.88** + **TypeScript**
+- **Firebase**: Auth, Cloud Firestore
+- **React Navigation** (native stack)
+- **react-native-fbsdk-next** and **react-native-nitro-google-signin** for social login
+- ESLint, Prettier, Jest
 
-# OR using Yarn
-yarn start
+## Architecture
+
+The app is split into three layers so UI code never talks to Firebase directly:
+
+```
+src/
+├── repos/       Data access – the only layer that knows about Firestore
+├── hooks/       State & logic – loading, errors, pagination, subscriptions
+├── screens/     Screens wired into navigation
+├── components/  Reusable UI (CustomButton, Textfield, MessageBubble)
+├── nav/         Auth-gated navigation
+└── types/       Shared TypeScript types
 ```
 
-## Step 2: Build and run your app
+**Key decisions**
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- **Auth-gated navigation**: `onAuthStateChanged` decides whether the login stack or the app stack is rendered, so signing out returns to login automatically.
+- **Pagination + live listener**: the chat loads the latest 50 messages once, then subscribes only to messages *newer* than that page. Older messages are fetched with `startAfter(cursor)`. This keeps the listener small regardless of chat history size.
+- **Atomic writes**: sending a message and updating the room's `lastMessageAt` happen in one `writeBatch`, using `serverTimestamp()` so ordering doesn't depend on device clocks.
+- **Denormalised sender info**: name and avatar are stored on each message to avoid a user lookup per message.
+
+## Getting started
+
+### Requirements
+
+- Node.js ≥ 22.11
+- Xcode <version you used> and CocoaPods
+- Ruby / Bundler (for CocoaPods)
+
+### Install and run (iOS)
+
+```bash
+git clone https://github.com/katelijacobsen/pentia.git
+cd pentia
+npm install
+cd ios && bundle install && bundle exec pod install && cd ..
+npm run ios
+```
+
+The Firebase client config (`ios/GoogleService-Info.plist`) is committed on purpose. It identifies the Firebase project and is not a secret. Data access is protected by Firestore Security Rules.
+
+### Signing in
+
+- **Google**: works with any Google account.
+- **Facebook**: the Facebook app is in development mode, so only accounts added as testers can sign in. <Ask me to add you, or use Google.>
 
 ### Android
 
-```sh
-# Using npm
-npm run android
+<Option A: Android has not been configured for Firebase yet (`google-services.json` and Facebook setup missing). The app is developed and tested on iOS only.>
+<Option B: describe the steps once it works.>
 
-# OR using Yarn
-yarn android
-```
+## Known issues
 
-### iOS
+- "Load more messages" never triggers because `hasMore` isn't set after the first page load.
+- Send errors are logged but not shown to the user.
+- Some placeholder files exist for features not yet built (toast, avatar, file upload).
+- Styles/colours are duplicated across components instead of a shared theme.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Next steps
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+1. Fix pagination and surface errors in the UI (error dialog on login failure)
+2. Shared `theme.ts` for colours and spacing
+3. Room description and chevron in the room list
+4. Splash screen
+5. Image upload with Firebase Storage
+6. Push notifications (FCM) with deep links into a specific room
+7. Unit tests for hooks and repos
